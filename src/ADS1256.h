@@ -151,12 +151,15 @@ static constexpr int8_t PIN_UNUSED = -1;
 	//Stop AD
 	void stopConversion();
 	
+	//Check if last operation timed out waiting for DRDY
+	bool hasTimeout();
+	
 private:
 	
 SPIClass* _spi; //Pointer to an SPIClass object
 
-void waitForLowDRDY(); // Block until DRDY is low
-void waitForHighDRDY(); // Block until DRDY is high
+bool waitForLowDRDY(unsigned long timeout_ms = 1000); // Block until DRDY is low, returns false on timeout
+bool waitForHighDRDY(unsigned long timeout_ms = 1000); // Block until DRDY is high, returns false on timeout
 void updateMUX(uint8_t muxValue);
 inline void CS_LOW();
 inline void CS_HIGH();
@@ -185,5 +188,6 @@ byte _outputBuffer[3]; //3-byte (24-bit) buffer for the fast acquisition - Singl
 long _outputValue; //Combined value of the _outputBuffer[3]
 bool _isAcquisitionRunning; //bool that keeps track of the acquisition (running or not)
 uint8_t _cycle; //Tracks the cycles as the MUX is cycling through the input channels
+bool _lastOpTimeout; //Tracks if last DRDY wait timed out
 };
 #endif

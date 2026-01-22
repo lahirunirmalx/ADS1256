@@ -19,7 +19,7 @@
 
 //Constructor
 ADS1256::ADS1256(const int8_t DRDY_pin, const int8_t RESET_pin, const int8_t SYNC_pin, const int8_t CS_pin,float VREF, SPIClass* spi):  _spi(spi),
-  _DRDY_pin(DRDY_pin),  _RESET_pin(RESET_pin),  _SYNC_pin(SYNC_pin),  _CS_pin(CS_pin),  _VREF(VREF),  _PGA(0)
+  _DRDY_pin(DRDY_pin),  _RESET_pin(RESET_pin),  _SYNC_pin(SYNC_pin),  _CS_pin(CS_pin),  _VREF(VREF),  _PGA(0),  _lastOpTimeout(false)
 {	
 	pinMode(_DRDY_pin, INPUT);	
 	 
@@ -94,16 +94,39 @@ void ADS1256::InitializeADC()
   _isAcquisitionRunning = false; //MCU will be waiting to start a continuous acquisition
 }
 
-void ADS1256::waitForLowDRDY()
-{		    
-    while (digitalRead(_DRDY_pin) == HIGH) {} 
+bool ADS1256::waitForLowDRDY(unsigned long timeout_ms)
+{
+    unsigned long start = millis();
+    while (digitalRead(_DRDY_pin) == HIGH) {
+        if (millis() - start >= timeout_ms) {
+            _lastOpTimeout = true;
+            return false; // Timeout occurred
+        }
+    }
+    return true; // DRDY went low
 }
 
-void ADS1256::waitForHighDRDY()
-{		
+bool ADS1256::waitForHighDRDY(unsigned long timeout_ms)
+{
 #if F_CPU >= 48000000  //Fast MCUs need this protection to wait until DRDY goes high after a conversion
-	while (digitalRead(_DRDY_pin) == LOW) {}   
+    unsigned long start = millis();
+    while (digitalRead(_DRDY_pin) == LOW) {
+        if (millis() - start >= timeout_ms) {
+            _lastOpTimeout = true;
+            return false; // Timeout occurred
+        }
+    }
+#else
+    (void)timeout_ms; // Suppress unused parameter warning on slow MCUs
 #endif
+    return true; // DRDY went high (or not needed on slow MCUs)
+}
+
+bool ADS1256::hasTimeout()
+{
+    bool timeout = _lastOpTimeout;
+    _lastOpTimeout = false; // Clear flag after reading
+    return timeout;
 }
 
 void ADS1256::stopConversion() //Sending SDATAC to stop the continuous conversion
