@@ -251,7 +251,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Curious Scientist**
 - Website: [curiousscientist.tech](https://curiousscientist.tech)
-- Email: contact@curiousscientist.tech
 
 ## Contributing
 
