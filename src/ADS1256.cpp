@@ -742,8 +742,9 @@ long ADS1256::cycleDifferential()
 
 void ADS1256::updateConversionParameter()
 {
-	conversionParameter = ((2.0 * _VREF) / 8388608.0) / (pow(2, _PGA)); //Calculate the "bit to Volts" multiplier	
-	//8388608 = 2^{23} - 1, REF: p23, Table 16.
+	// 8388608 = 2^23 (full scale for 24-bit signed ADC), REF: p23, Table 16
+	// Use bit shift instead of pow() for efficiency
+	conversionParameter = ((2.0 * _VREF) / 8388608.0) / (float)(1 << _PGA);
 }
 
 void ADS1256::updateMUX(uint8_t muxValue)
