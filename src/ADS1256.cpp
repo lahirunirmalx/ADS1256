@@ -450,39 +450,16 @@ void ADS1256::writeGPIO(uint8_t dir0value, uint8_t dir1value, uint8_t dir2value,
 
 uint8_t ADS1256::readGPIO(uint8_t gpioPin) //Reading GPIO
 {	
-	uint8_t GPIO_bit3, GPIO_bit2, GPIO_bit1, GPIO_bit0, GPIO_return;
+	if (gpioPin > 3) {
+		return 0; // Invalid pin, return 0 early
+	}
 	
 	_GPIO = readRegister(IO_REG); //Read the GPIO register
 	
-	//Save each bit values in a variable
-	GPIO_bit3 = bitRead(_GPIO, 3);
-	GPIO_bit2 = bitRead(_GPIO, 2);
-	GPIO_bit1 = bitRead(_GPIO, 1);
-	GPIO_bit0 = bitRead(_GPIO, 0);	
-	
 	delay(100);	
 	
-	switch(gpioPin) //Selecting which value should be returned
-	{
-		case 0:
-		GPIO_return = GPIO_bit0;
-		break;
-		
-		case 1:
-		GPIO_return = GPIO_bit1;
-		break;
-		
-		case 2:
-		GPIO_return = GPIO_bit2;
-		break;
-		
-		case 3:
-		GPIO_return = GPIO_bit3;
-		break;
-	}
-
-	return GPIO_return;
-	
+	// Return the requested bit directly
+	return bitRead(_GPIO, gpioPin);
 }
 
 void ADS1256::sendDirectCommand(uint8_t directCommand)
