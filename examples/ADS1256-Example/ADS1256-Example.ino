@@ -316,16 +316,24 @@ void loop() {
           {
             while (!Serial.available());
             inputChannel = Serial.parseInt();
-            A.setMUX(singleEndedChannels[inputChannel]);
-            //Example: "Ms1" selects the SING_1 as input channel
+            if (inputChannel >= 0 && inputChannel < 8) {
+              A.setMUX(singleEndedChannels[inputChannel]);
+              //Example: "Ms1" selects the SING_1 as input channel
+            } else {
+              Serial.println("Error: single-ended channel must be 0-7");
+            }
           }
 
           if (inputMode == 'd')  //differential
           {
             while (!Serial.available());
             inputChannel = Serial.parseInt();
-            A.setMUX(differentialChannels[inputChannel]);
-            //Example: "Md0" selects the DIFF_0_1 as input channel
+            if (inputChannel >= 0 && inputChannel < 4) {
+              A.setMUX(differentialChannels[inputChannel]);
+              //Example: "Md0" selects the DIFF_0_1 as input channel
+            } else {
+              Serial.println("Error: differential channel must be 0-3");
+            }
           }
         }
         break;
@@ -334,10 +342,14 @@ void loop() {
         {
           while (!Serial.available());
           pgaSelection = Serial.parseInt();
-          A.setPGA(pgaValues[pgaSelection]);
-          //Example: P4 will select the PGA = 16
-          Serial.print("PGA value: ");
-          Serial.println(A.getPGA());  //Read the PGA from the register and print it
+          if (pgaSelection >= 0 && pgaSelection < 7) {
+            A.setPGA(pgaValues[pgaSelection]);
+            //Example: P4 will select the PGA = 16
+            Serial.print("PGA value: ");
+            Serial.println(A.getPGA());  //Read the PGA from the register and print it
+          } else {
+            Serial.println("Error: PGA selection must be 0-6");
+          }
         }
         break;
       //--------------------------------------------------------------------------------------------------------
@@ -345,15 +357,19 @@ void loop() {
         {
           while (!Serial.available());
           drateSelection = Serial.parseInt();  //Parse the number (item number in the array)
-          delay(100);
-          Serial.print("DRATE is selected as: ");
-          Serial.println(drateValues[drateSelection]);  //Print the value from the array
-          delay(100);
-          A.setDRATE(drateValues[drateSelection]);  //Pass the value to the register on the ADS1256
-          delay(100);
-          Serial.print("DRATE is set to ");
-          Serial.println(A.readRegister(DRATE_REG));  //Read the register to see if the value was updated correctly
-          //Example: F3 will make the DRATE = 3750 SPS
+          if (drateSelection >= 0 && drateSelection < 16) {
+            delay(100);
+            Serial.print("DRATE is selected as: ");
+            Serial.println(drateValues[drateSelection]);  //Print the value from the array
+            delay(100);
+            A.setDRATE(drateValues[drateSelection]);  //Pass the value to the register on the ADS1256
+            delay(100);
+            Serial.print("DRATE is set to ");
+            Serial.println(A.readRegister(DRATE_REG));  //Read the register to see if the value was updated correctly
+            //Example: F3 will make the DRATE = 3750 SPS
+          } else {
+            Serial.println("Error: DRATE selection must be 0-15");
+          }
         }
         break;
       //--------------------------------------------------------------------------------------------------------
@@ -361,12 +377,16 @@ void loop() {
         {
           while (!Serial.available());
           registerToRead = Serial.parseInt();  //This part reads the number of the register from the serial port
-          Serial.print("Value of ");
-          Serial.print(registers[registerToRead]);
-          Serial.print(" register is: ");
-          Serial.println(A.readRegister(registerToRead));
-          //Example: "R2" will read the register at address 2 which is the ADCON register
-          //Note: The value is printed as a decimal number
+          if (registerToRead >= 0 && registerToRead < 11) {
+            Serial.print("Value of ");
+            Serial.print(registers[registerToRead]);
+            Serial.print(" register is: ");
+            Serial.println(A.readRegister(registerToRead));
+            //Example: "R2" will read the register at address 2 which is the ADCON register
+            //Note: The value is printed as a decimal number
+          } else {
+            Serial.println("Error: register must be 0-10");
+          }
         }
         break;
       //--------------------------------------------------------------------------------------------------------
@@ -377,9 +397,17 @@ void loop() {
           while (!Serial.available());
           registerValueToWrite = Serial.parseInt();  //This part reads the value of the register from the serial port
 
-          A.writeRegister(registerToWrite, registerValueToWrite);
-          //Example: "W1 35" will write 35 ("00100011") on register 1 which is the MUX register.
-          //This will make the input as DIFF_2_3 (A2(+) & A1(-))
+          if (registerToWrite >= 0 && registerToWrite < 11) {
+            A.writeRegister(registerToWrite, registerValueToWrite);
+            //Example: "W1 35" will write 35 ("00100011") on register 1 which is the MUX register.
+            //This will make the input as DIFF_2_3 (A2(+) & A1(-))
+            Serial.print("Wrote ");
+            Serial.print(registerValueToWrite);
+            Serial.print(" to ");
+            Serial.println(registers[registerToWrite]);
+          } else {
+            Serial.println("Error: register must be 0-10");
+          }
         }
         break;
         //--------------------------------------------------------------------------------------------------------
