@@ -538,7 +538,7 @@ long ADS1256::readSingle() //Reading a single value ONCE using the RDATA command
 	_spi->beginTransaction(SPISettings(1920000, MSBFIRST, SPI_MODE1));
 	CS_LOW(); //REF: P34: "CS must stay low during the entire command sequence"  
 	waitForLowDRDY();
-	_spi->transfer(0b00000001); //Issue RDATA (0000 0001) command
+	_spi->transfer(RDATA); //Issue RDATA command
 	delayMicroseconds(7); //Wait t6 time (~6.51 us) REF: P34, FIG:30.
 
 	_outputBuffer[0] = _spi->transfer(0); // MSB
@@ -563,7 +563,7 @@ long ADS1256::readSingleContinuous() //Reads the recently selected input channel
 	  _spi->beginTransaction(SPISettings(1920000, MSBFIRST, SPI_MODE1));
 	  CS_LOW(); //REF: P34: "CS must stay low during the entire command sequence"	  
 	  waitForLowDRDY();
-	  _spi->transfer(0b00000011);  //Issue RDATAC (0000 0011) 
+	  _spi->transfer(RDATAC);  //Issue RDATAC command 
 	  delayMicroseconds(7); //Wait t6 time (~6.51 us) REF: P34, FIG:30.	  
 	}
 	else
@@ -642,13 +642,12 @@ long ADS1256::cycleSingle()
           break;
       }
       //Step 2.
-      _spi->transfer(0b11111100); //SYNC
+      _spi->transfer(SYNC); //SYNC command
       delayMicroseconds(4); //t11 delay 24*tau = 3.125 us //delay should be larger, so we delay by 4 us
-      _spi->transfer(0b11111111); //WAKEUP
+      _spi->transfer(WAKEUP); //WAKEUP command
 
       //Step 3.
-      //Issue RDATA (0000 0001) command
-      _spi->transfer(0b00000001);
+      _spi->transfer(RDATA); //Issue RDATA command
       delayMicroseconds(7); //Wait t6 time (~6.51 us) REF: P34, FIG:30.
 
 	  _outputBuffer[0] = _spi->transfer(0x0F); // MSB 
@@ -714,12 +713,12 @@ long ADS1256::cycleDifferential()
           break;
       }
 
-      _spi->transfer(0b11111100); //SYNC
+      _spi->transfer(SYNC); //SYNC command
       delayMicroseconds(4); //t11 delay 24*tau = 3.125 us //delay should be larger, so we delay by 4 us
-      _spi->transfer(0b11111111); //WAKEUP
+      _spi->transfer(WAKEUP); //WAKEUP command
 
       //Step 3.
-      _spi->transfer(0b00000001); //Issue RDATA (0000 0001) command
+      _spi->transfer(RDATA); //Issue RDATA command
       delayMicroseconds(7); //Wait t6 time (~6.51 us) REF: P34, FIG:30.
 
 	  _outputBuffer[0] = _spi->transfer(0); // MSB 
