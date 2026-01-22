@@ -208,7 +208,6 @@ void ADS1256::setCLKOUT(uint8_t clkout) //Setting CLKOUT
 		bitWrite(_ADCON, 6, 1);
 		bitWrite(_ADCON, 5, 1);				
 	}
-	else{}
 	
 	writeRegister(ADCON_REG, _ADCON);
 	delay(100);
@@ -244,7 +243,6 @@ void ADS1256::setSDCS(uint8_t sdcs) //Setting SDCS
 		bitWrite(_ADCON, 4, 1);
 		bitWrite(_ADCON, 3, 1);				
 	}
-	else{}
 	
 	writeRegister(ADCON_REG, _ADCON);
 	delay(100);
@@ -266,7 +264,6 @@ void ADS1256::setByteOrder(uint8_t byteOrder) //Setting byte order (MSB/LSB)
 		bitWrite(_STATUS, 3, 1);
 		//Set value of _STATUS at the third bit to 1
 	}
-	else{}
 	
 	writeRegister(STATUS_REG, _STATUS);
 	delay(100);
@@ -295,7 +292,6 @@ void ADS1256::setAutoCal(uint8_t acal) //Setting ACAL (Automatic SYSCAL)
 		bitWrite(_STATUS, 2, 1);
 		//_STATUS |= B00000100;
 	}
-	else{}
 	
 	writeRegister(STATUS_REG, _STATUS);
 	delay(100);
@@ -324,7 +320,6 @@ void ADS1256::setBuffer(uint8_t bufen) //Setting input buffer (Input impedance)
 		//_STATUS |= B00000010;
 		bitWrite(_STATUS, 1, 1);
 	}
-	else{}
 	
 	writeRegister(STATUS_REG, _STATUS);
 	delay(100);
@@ -598,8 +593,6 @@ long ADS1256::cycleSingle()
 	  delay(50);
 	  CS_LOW(); //CS must stay LOW during the entire sequence [Ref: P34, T24]
 	}
-	else
-	{}
   
 	if(_cycle < 8)
 	{      
@@ -684,8 +677,6 @@ long ADS1256::cycleDifferential()
 	  delay(50);
 	  CS_LOW(); //CS must stay LOW during the entire sequence [Ref: P34, T24]
 	}
-	else
-	{}
 	
 	if(_cycle < 4)
     {
