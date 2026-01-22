@@ -505,7 +505,7 @@ void ADS1256::writeRegister(uint8_t registerAddress, uint8_t registerValueToWrit
   
 }
 
-long ADS1256::readRegister(uint8_t registerAddress) //Reading a register
+uint8_t ADS1256::readRegister(uint8_t registerAddress) //Reading a register
 {
    waitForLowDRDY();
 	
@@ -514,7 +514,7 @@ long ADS1256::readRegister(uint8_t registerAddress) //Reading a register
 
   CS_LOW(); //CS must stay LOW during the entire sequence [Ref: P34, T24]
 
-  _spi->transfer(0x10 | registerAddress); //0x10 = 0001000 = RREG - OR together the two numbers (command + address)
+  _spi->transfer(RREG | registerAddress); //RREG command OR'd with register address
 
   _spi->transfer(0x00); //2nd (empty) command byte
 

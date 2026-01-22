@@ -110,7 +110,7 @@ static constexpr int8_t PIN_UNUSED = -1;
 	//ADS1256(int drate, int pga, int byteOrder, bool bufen);
 	
 	//Read a register
-	long readRegister(uint8_t registerAddress);
+	uint8_t readRegister(uint8_t registerAddress);
 	
 	//Write a register
 	void writeRegister(uint8_t registerAddress, uint8_t registerValueToWrite);	
