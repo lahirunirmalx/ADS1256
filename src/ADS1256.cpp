@@ -131,8 +131,12 @@ bool ADS1256::hasTimeout()
 
 void ADS1256::stopConversion() //Sending SDATAC to stop the continuous conversion
 {	
+	if (!_isAcquisitionRunning) {
+		return; //Nothing to stop, avoid ending a transaction that was never started
+	}
+	
 	waitForLowDRDY(); //SDATAC should be called after DRDY goes LOW (p35. Figure 33)
-	_spi->transfer(0b00001111); //Send SDATAC to the ADC	
+	_spi->transfer(SDATAC); //Send SDATAC to the ADC	
 	CS_HIGH(); //We finished the command sequence, so we switch it back to HIGH
 	_spi->endTransaction();
 	
